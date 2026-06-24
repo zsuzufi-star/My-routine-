@@ -3,7 +3,7 @@ const CACHE = 'routine-v1';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/index.html'])));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./index.html'])));
 });
 
 self.addEventListener('activate', e => {
@@ -37,12 +37,12 @@ function scheduleAll(prayers, reminders) {
       setTimeout(() => {
         self.registration.showNotification(item.title, {
           body: item.body,
-          icon: '/icon.png',
-          badge: '/icon.png',
+          icon: './icon.png',
+          badge: './icon.png',
           tag: item.tag || item.title,
           renotify: true,
           vibrate: [200, 100, 200],
-          data: { url: '/' }
+          data: { url: './' }
         });
       }, delay);
     }
@@ -53,6 +53,6 @@ self.addEventListener('notificationclick', e => {
   e.notification.close();
   e.waitUntil(clients.matchAll({ type: 'window' }).then(cs => {
     if (cs.length) return cs[0].focus();
-    return clients.openWindow('/');
+    return clients.openWindow('./');
   }));
 });

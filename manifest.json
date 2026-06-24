@@ -2,7 +2,7 @@
   "name": "Daily Routine – Coventry",
   "short_name": "My Routine",
   "description": "Daily household schedule with Salah times for Coventry UK",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f1923",
   "theme_color": "#14b8a6",
