@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#0f1923">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Routine">
+<link rel="manifest" href="manifest.json">
+<title>Daily Routine – Coventry</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1923;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;padding:env(safe-area-inset-top,14px) 10px 80px;min-height:100vh}
+.wrap{max-width:600px;margin:0 auto}
+.eyebrow{font-size:9px;letter-spacing:3px;color:#14b8a6;text-transform:uppercase;text-align:center;margin-bottom:4px;padding-top:8px}
+h1{font-size:21px;font-weight:800;color:#fff;text-align:center}
+.sub{font-size:12px;color:#64748b;text-align:center;margin-bottom:12px;margin-top:2px}
+
+/* notification bar */
+.notif-bar{border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.notif-bar.off{background:#1a1200;border:1px solid #f59e0b44;color:#f59e0b}
+.notif-bar.on{background:#0d2b1a;border:1px solid #34d39944;color:#34d399}
+.notif-bar button{background:#f59e0b;color:#0f1923;border:none;border-radius:7px;padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}
+.notif-bar.on button{background:#34d399}
+
+.banner{background:linear-gradient(135deg,#2a1f05,#140f00);border:1px solid #f59e0b55;border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.b-left .label{font-size:9px;color:#f59e0b;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+.b-left .pname{font-size:18px;font-weight:800;color:#fff}
+.b-left .ptime{font-size:13px;color:#f59e0b;margin-left:6px}
+.b-right .inp{font-size:9px;color:#64748b;letter-spacing:1px;text-transform:uppercase;text-align:right}
+.b-right .cd{font-size:22px;font-weight:800;color:#f59e0b}
+
+.pgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px}
+.pcell{background:#162030;border:1px solid #1e3045;border-radius:10px;padding:7px 3px;text-align:center}
+.pcell.nx{background:#2a1f05;border-color:#f59e0b}
+.pn{font-size:7px;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:2px}
+.pcell.nx .pn{color:#f59e0b}
+.pt{font-size:12px;font-weight:800;color:#fff}
+.pcell.nx .pt{color:#f59e0b}
+
+.method-note{background:#0d2b1a;border:1px solid #34d39933;border-radius:8px;padding:6px 12px;font-size:11px;color:#34d399;text-align:center;margin-bottom:10px}
+
+.tabs{display:flex;gap:4px;background:#162030;border-radius:12px;padding:4px;border:1px solid #1e3045;margin-bottom:12px}
+.tab{flex:1;padding:8px 2px;border-radius:9px;border:none;font-weight:700;font-size:11px;cursor:pointer;transition:.2s;background:transparent;color:#64748b}
+.tab.on{background:#14b8a6;color:#0f1923}
+
+.prog-txt{font-size:12px;color:#64748b;display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.rst{background:none;border:1px solid #1e3045;color:#64748b;border-radius:7px;padding:3px 9px;font-size:11px;cursor:pointer}
+.prog{height:4px;background:#1e3045;border-radius:4px;margin-bottom:10px;overflow:hidden}
+.pbar{height:100%;background:#14b8a6;border-radius:4px;transition:.4s;width:0%}
+
+.sr{display:flex;align-items:center;gap:10px;border-radius:10px;padding:9px 12px;margin-bottom:4px;cursor:pointer;border:1px solid transparent;border-left:3px solid transparent}
+.sr.prayer{background:#2a1f05;border-color:#f59e0b22;border-left-color:#f59e0b}
+.sr.child{background:#1a1a3a;border-color:#818cf822;border-left-color:#818cf8}
+.sr.house{background:#0d2b20;border-color:#34d39922;border-left-color:#34d399}
+.sr.task{background:#141f2e;border-color:#14b8a622;border-left-color:#14b8a6}
+.sr.dn{background:#162030!important;border-color:#1e3045!important;border-left-color:#1e3045!important;opacity:.4}
+.stime{font-size:9px;font-weight:700;letter-spacing:.3px;margin-bottom:1px}
+.slbl{font-size:13px;color:#fff}
+.sr.prayer .slbl{font-weight:800;color:#f59e0b}
+.sr.dn .slbl,.sr.dn .stime{color:#64748b}
+.cb{width:18px;height:18px;border-radius:5px;border:2px solid #64748b;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#0f1923}
+.sr.prayer .cb{border-color:#f59e0b}
+.sr.child .cb{border-color:#818cf8}
+.sr.house .cb{border-color:#34d399}
+.sr.task .cb{border-color:#14b8a6}
+.pbadge{font-size:9px;background:#f59e0b22;color:#f59e0b;padding:2px 7px;border-radius:10px;font-weight:700;flex-shrink:0;white-space:nowrap}
+
+.ct{font-weight:800;font-size:12px;margin:12px 0 5px}
+.cbox{background:#162030;border-radius:12px;border:1px solid #1e3045;overflow:hidden}
+.crow{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-bottom:1px solid #1e3045}
+.crow:last-child{border-bottom:none}
+.ck{width:16px;height:16px;border-radius:4px;flex-shrink:0;border:2px solid #1e3045;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900}
+.clbl{font-size:13px;color:#e2e8f0}
+.crow.on .clbl{color:#64748b;text-decoration:line-through}
+
+.rc{background:#162030;border-radius:14px;border:1px solid #1e3045;padding:14px 16px;margin-bottom:12px}
+.rct{font-weight:800;color:#fff;margin-bottom:10px;font-size:14px}
+.rrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #1e3045}
+.rrow:last-child{border-bottom:none}
+.rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rtm{width:62px;font-size:12px;font-weight:700;color:#64748b;flex-shrink:0}
+.rlb{font-size:13px;color:#e2e8f0}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1e3045}
+.pr:last-child{border-bottom:none}
+.prn{font-weight:700;color:#fff;font-size:14px}
+.prs{font-size:11px;color:#64748b;margin-left:6px}
+.prt{font-weight:800;font-size:15px;color:#14b8a6}
+.prt.nx{color:#f59e0b}
+.nxb{font-size:9px;margin-left:5px;color:#f59e0b;background:#2a1f05;padding:1px 6px;border-radius:10px}
+.tip{background:#0a1a0f;border:1px solid #34d39933;border-radius:12px;padding:12px 14px;font-size:12px;color:#94a3b8;line-height:1.6;margin-bottom:12px}
+.tip strong{color:#fff}
+
+.foot{text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid #1e3045}
+.rbtn{background:#14b8a6;color:#0f1923;border:none;border-radius:10px;padding:10px 22px;font-weight:800;font-size:13px;cursor:pointer;margin-bottom:6px}
+.fsub{font-size:10px;color:#475569}
+.hidden{display:none!important}
+
+/* install prompt */
+.install-bar{background:#1a0d2e;border:1px solid #818cf844;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#818cf8;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.install-bar button{background:#818cf8;color:#0f1923;border:none;border-radius:7px;padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Coventry, UK · Daily Planner</div>
+  <h1>🏠 Household Routine</h1>
+  <div class="sub" id="dateStr"></div>
+
+  <!-- Install prompt (shown if not installed) -->
+  <div class="install-bar hidden" id="installBar">
+    <span>📲 Install as App on Android</span>
+    <button id="installBtn">Install</button>
+  </div>
+
+  <!-- Notification permission bar -->
+  <div class="notif-bar off" id="notifBar">
+    <span id="notifTxt">🔔 Enable notifications for prayer & task reminders</span>
+    <button id="notifBtn" onclick="askNotif()">Enable</button>
+  </div>
+
+  <!-- Next prayer countdown banner -->
+  <div class="banner">
+    <div class="b-left">
+      <div class="label">Next Prayer</div>
+      <div><span class="pname" id="nxName">–</span><span class="ptime" id="nxTime"></span></div>
+    </div>
+    <div class="b-right">
+      <div class="inp">in</div>
+      <div class="cd" id="cdEl">–</div>
+    </div>
+  </div>
+
+  <!-- Prayer times grid -->
+  <div class="pgrid" id="pgrid"></div>
+  <div class="method-note">✅ Calculated offline · Muslim World League · Coventry 52.41°N · Updates daily</div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab on" onclick="sw('schedule',this)">📋 Schedule</button>
+    <button class="tab"    onclick="sw('checklist',this)">✅ To-Do</button>
+    <button class="tab"    onclick="sw('reminders',this)">🔔 Reminders</button>
+  </div>
+
+  <div id="tab-schedule">
+    <div class="prog-txt">
+      <span id="ptxt">0 / 0 completed</span>
+      <button class="rst" onclick="resetAll()">Reset</button>
+    </div>
+    <div class="prog"><div class="pbar" id="pbar"></div></div>
+    <div id="slist"></div>
+  </div>
+  <div id="tab-checklist" class="hidden"></div>
+  <div id="tab-reminders" class="hidden"></div>
+
+  <div class="foot">
+    <button class="rbtn" onclick="init()">🔄 Recalculate for Today</button>
+    <div class="fsub">No internet needed · Works offline · Install on Android via Chrome → Add to Home Screen</div>
+  </div>
+</div>
+
+<script>
+// ── PRAYER CALCULATION (Muslim World League, Coventry 52.41°N) ──────────
+const LAT=52.4068,LNG=-1.5197,rad=d=>d*Math.PI/180,deg=r=>r*180/Math.PI;
+function jd(y,m,d){if(m<=2){y--;m+=12}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5}
+function sunPos(date){
+  const D=jd(date.getFullYear(),date.getMonth()+1,date.getDate())-2451545;
+  const g=((357.529+0.98560028*D)%360+360)%360,q=((280.459+0.98564736*D)%360+360)%360;
+  const L=((q+1.915*Math.sin(rad(g))+0.02*Math.sin(rad(2*g)))%360+360)%360,e=23.439-3.6e-7*D;
+  const RA=deg(Math.atan2(Math.cos(rad(e))*Math.sin(rad(L)),Math.cos(rad(L))))/15;
+  const dec=deg(Math.asin(Math.sin(rad(e))*Math.sin(rad(L))));
+  return{dec,EqT:q/15-((RA+24)%24)};
+}
+function ha(alt,dec){
+  const c=(Math.sin(rad(alt))-Math.sin(rad(LAT))*Math.sin(rad(dec)))/(Math.cos(rad(LAT))*Math.cos(rad(dec)));
+  return(c>1||c<-1)?NaN:deg(Math.acos(c))/15;
+}
+function hs(h){h=((h%24)+24)%24;const hr=Math.floor(h),mn=Math.round((h-hr)*60);if(mn>=60)return hs(hr+1);return`${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}`}
+function f12(t){if(!t||t==='–')return'–';const[h,m]=t.split(':').map(Number);return`${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`}
+function calcTimes(){
+  const now=new Date(),tz=-now.getTimezoneOffset()/60;
+  const{dec,EqT}=sunPos(now),noon=12+tz-LNG/15-EqT;
+  const srH=ha(-0.833,dec),sunrise=noon-srH,sunset=noon+srH,night=24-(sunset-sunrise);
+  const fH=ha(-18,dec),iH=ha(-17,dec);
+  const fajr=isNaN(fH)?sunrise-night/7:noon-fH,isha=isNaN(iH)?sunset+night/7:noon+iH;
+  const asrAlt=deg(Math.atan(1/(1+Math.tan(rad(Math.abs(LAT-dec)))))),asr=noon+ha(asrAlt,dec);
+  return{Fajr:hs(fajr),Sunrise:hs(sunrise),Dhuhr:hs(noon+1/60),Asr:hs(asr),Maghrib:hs(sunset+1/60),Isha:hs(isha)};
+}
+
+// ── STATE ────────────────────────────────────────────────────────────────
+const PNAMES=['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+let PT={},ck={},sched=[];
+function toM(t){const[h,m]=t.split(':').map(Number);return h*60+m}
+function nowM(){const n=new Date();return n.getHours()*60+n.getMinutes()}
+function nextP(){
+  const now=nowM();
+  for(const p of PNAMES)if(toM(PT[p])>now)return{name:p,raw:PT[p],mins:toM(PT[p])-now};
+  return{name:'Fajr',raw:PT.Fajr,mins:1440-nowM()+toM(PT.Fajr)};
+}
+
+// ── SCHEDULE ─────────────────────────────────────────────────────────────
+function buildSched(){return[
+  {t:'5:00 AM',        l:'Wake up',                                         tp:'task'},
+  {t:'5:00–5:30 AM',   l:`Fajr Prayer (${f12(PT.Fajr)}) + Qur\'an / Reading`,tp:'prayer'},
+  {t:'5:30–6:00 AM',   l:'Personal prep & quick kitchen tidy',              tp:'task'},
+  {t:'6:00–6:30 AM',   l:'Cook breakfast & pack school lunches',            tp:'task'},
+  {t:'6:30–7:00 AM',   l:'Wake children, help them dress',                  tp:'child'},
+  {t:'7:00–7:20 AM',   l:'Shower the little one',                           tp:'child'},
+  {t:'7:20–7:50 AM',   l:'Family breakfast together',                       tp:'task'},
+  {t:'7:50–8:05 AM',   l:'Tea + final school bag check',                    tp:'task'},
+  {t:'8:05–8:30 AM',   l:'Walk / drive children to school (by 8:30)',       tp:'child'},
+  {t:'8:30–9:00 AM',   l:'Return home — tea & brief rest',                  tp:'task'},
+  {t:'9:00–10:00 AM',  l:'Broom / sweep, washing up, laundry',              tp:'house'},
+  {t:'10:00–10:15 AM', l:'Tea break ☕',                                     tp:'task'},
+  {t:'10:15–12:00 PM', l:'Cook lunch & dinner prep, errands / shopping',    tp:'house'},
+  {t:'12:00–12:30 PM', l:'Lunch',                                           tp:'task'},
+  {t:f12(PT.Dhuhr),    l:'★ Dhuhr Prayer',                                  tp:'prayer'},
+  {t:'After Dhuhr',    l:'Little one naps — your rest / reading time',      tp:'task'},
+  {t:'3:00–3:20 PM',   l:'Pick up children from school',                    tp:'child'},
+  {t:'3:20–3:45 PM',   l:'Snack + tea on return',                           tp:'task'},
+  {t:'3:45–5:00 PM',   l:'Children\'s homework, studying & reading',        tp:'child'},
+  {t:'5:00–6:00 PM',   l:'Free play / TV time',                             tp:'task'},
+  {t:'6:00 PM',        l:'Start cooking dinner',                            tp:'house'},
+  {t:f12(PT.Asr),      l:'★ Asr Prayer',                                    tp:'prayer'},
+  {t:'After Asr',      l:'Dinner 🍽',                                        tp:'task'},
+  {t:'After dinner',   l:'Family time, TV, tidy kitchen',                   tp:'task'},
+  {t:'8:30–9:00 PM',   l:'Little one\'s bath / wash-up',                    tp:'child'},
+  {t:'9:00 PM',        l:'Children\'s bedtime routine + story',             tp:'child'},
+  {t:f12(PT.Maghrib),  l:'★ Maghrib Prayer',                                tp:'prayer'},
+  {t:'After Maghrib',  l:'Quiet time, tea, prep for tomorrow',              tp:'task'},
+  {t:f12(PT.Isha),     l:'★ Isha Prayer',                                   tp:'prayer'},
+  {t:'After Isha',     l:'Wind down & personal reading',                    tp:'task'},
+  {t:'11:00 PM',       l:'Bedtime 🌙',                                       tp:'task'},
+];}
+
+// ── NOTIFICATIONS ─────────────────────────────────────────────────────────
+let notifGranted = Notification.permission === 'granted';
+
+function updateNotifBar(){
+  const bar=document.getElementById('notifBar');
+  const btn=document.getElementById('notifBtn');
+  const txt=document.getElementById('notifTxt');
+  if(notifGranted){
+    bar.className='notif-bar on';
+    txt.textContent='✅ Notifications enabled — prayer & task alerts are active';
+    btn.textContent='Reschedule';
+  } else {
+    bar.className='notif-bar off';
+    txt.textContent='🔔 Tap to enable prayer & task reminder notifications';
+    btn.textContent='Enable';
+  }
+}
+
+async function askNotif(){
+  if(!('Notification' in window)){alert('Notifications not supported in this browser.');return;}
+  const perm = await Notification.requestPermission();
+  notifGranted = perm === 'granted';
+  updateNotifBar();
+  if(notifGranted) scheduleNotifications();
+}
+
+function scheduleNotifications(){
+  if(!notifGranted) return;
+  const now = new Date();
+  const prayers = [
+    {name:'Fajr',   time24:PT.Fajr,    emoji:'🌙'},
+    {name:'Dhuhr',  time24:PT.Dhuhr,   emoji:'☀️'},
+    {name:'Asr',    time24:PT.Asr,     emoji:'🌤'},
+    {name:'Maghrib',time24:PT.Maghrib, emoji:'🌅'},
+    {name:'Isha',   time24:PT.Isha,    emoji:'🌙'},
+  ];
+  const daily = [
+    {time24:'05:00',title:'⏰ Wake Up',         body:'Good morning! Time to start your day.'},
+    {time24:'06:00',title:'🍳 Breakfast',        body:'Time to cook breakfast and pack school lunches.'},
+    {time24:'08:05',title:'🎒 School Drop-off',  body:'Time to leave for school — drop-off by 8:30!'},
+    {time24:'15:00',title:'🏫 School Pick-up',   body:'Time to pick up the children from school.'},
+    {time24:'18:00',title:'🍽 Start Dinner',     body:'Time to start cooking dinner.'},
+    {time24:'20:30',title:'🛁 Bath Time',        body:"Time for the little one's bath and wash-up."},
+    {time24:'21:00',title:'📖 Bedtime',          body:'Time for children\'s bedtime routine and story.'},
+    {time24:'23:00',title:'💤 Your Bedtime',     body:'Time to wind down and get some rest.'},
+  ];
+
+  // Schedule prayer notifications
+  prayers.forEach(p => {
+    const[h,m]=p.time24.split(':').map(Number);
+    const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0).getTime();
+    const delay=fire-Date.now();
+    // 10 min before
+    const early=delay-600000;
+    if(early>0) setTimeout(()=>{
+      new Notification(`${p.emoji} ${p.name} in 10 minutes`,{body:`${p.name} prayer at ${f12(p.time24)} — time to prepare.`,tag:'prayer-'+p.name+'-early'});
+    },early);
+    // at prayer time
+    if(delay>0) setTimeout(()=>{
+      new Notification(`${p.emoji} Time for ${p.name} Prayer`,{body:`${p.name} prayer time — ${f12(p.time24)}. Allahu Akbar.`,tag:'prayer-'+p.name,vibrate:[300,100,300]});
+    },delay);
+  });
+
+  // Schedule daily task notifications
+  daily.forEach(d=>{
+    const[h,m]=d.time24.split(':').map(Number);
+    const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0).getTime();
+    const delay=fire-Date.now();
+    if(delay>0) setTimeout(()=>{
+      new Notification(d.title,{body:d.body,tag:'task-'+d.time24});
+    },delay);
+  });
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────
+const AC={prayer:'#f59e0b',child:'#818cf8',house:'#34d399',task:'#14b8a6'};
+
+function renderBanner(){
+  const nx=nextP();
+  document.getElementById('nxName').textContent=nx.name;
+  document.getElementById('nxTime').textContent=' '+f12(nx.raw);
+  const h=Math.floor(nx.mins/60),m=nx.mins%60;
+  document.getElementById('cdEl').textContent=`${h}h ${m}m`;
+}
+
+function renderPGrid(){
+  const nx=nextP();
+  document.getElementById('pgrid').innerHTML=PNAMES.map(p=>`
+    <div class="pcell${nx.name===p?' nx':''}">
+      <div class="pn">${p}</div>
+      <div class="pt">${f12(PT[p])}</div>
+    </div>`).join('');
+}
+
+function renderSched(){
+  sched=buildSched();
+  const done=Object.keys(ck).filter(k=>k[0]==='s'&&ck[k]).length;
+  document.getElementById('ptxt').textContent=`${done} / ${sched.length} completed`;
+  document.getElementById('pbar').style.width=`${done/sched.length*100}%`;
+  document.getElementById('slist').innerHTML=sched.map((r,i)=>`
+    <div class="sr ${r.tp}${ck['s'+i]?' dn':''}" onclick="tS(${i})">
+      <div class="cb" style="${ck['s'+i]?'background:#14b8a6;border-color:#14b8a6':'border-color:'+AC[r.tp]}">${ck['s'+i]?'✓':''}</div>
+      <div style="flex:1">
+        <div class="stime" style="color:${ck['s'+i]?'#64748b':AC[r.tp]}">${r.t}</div>
+        <div class="slbl">${r.l}</div>
+      </div>
+      ${r.tp==='prayer'&&!ck['s'+i]?'<div class="pbadge">PRAYER</div>':''}
+    </div>`).join('');
+}
+
+function renderCL(){
+  const cats=[
+    {ti:'🌅 Morning',c:'#14b8a6',it:['Wake up on time','Fajr prayer + Qur\'an','Personal prep & kitchen tidy','Cook breakfast & school lunches','Wake & dress both children','Shower the little one','Family breakfast','Tea + bag check','School drop-off by 8:30']},
+    {ti:'🕌 5 Daily Prayers',c:'#f59e0b',it:PNAMES.map(p=>`${p} — ${f12(PT[p])}`)},
+    {ti:'🧹 Housework',c:'#34d399',it:['Broom / sweep all floors','Wash up & tidy kitchen','Laundry (wash + hang)','Grocery / errands run']},
+    {ti:'🍳 Cooking',c:'#fb923c',it:['Cook lunch','Cook dinner','Prep tomorrow\'s lunch','Make tea / chai']},
+    {ti:'👶 Children',c:'#818cf8',it:['Pick up from school','Snack on return','Homework & studying','Reading time','Bath / wash little one','Bedtime routine + story','Children in bed']},
+    {ti:'🫶 Self & Family',c:'#f472b6',it:['Tea breaks (enjoy!)','TV / family time','Personal reading','Short walk or exercise','Prep for tomorrow','Wind down before bed']},
+  ];
+  document.getElementById('tab-checklist').innerHTML=cats.map((cat,ci)=>`
+    <div class="ct" style="color:${cat.c}">${cat.ti}</div>
+    <div class="cbox">${cat.it.map((item,ii)=>{const k=`c${ci}_${ii}`,d=ck[k];return`
+      <div class="crow${d?' on':''}" onclick="tC('${k}',this)" data-c="${cat.c}">
+        <div class="ck" style="${d?`background:${cat.c};border-color:${cat.c}`:`border-color:${cat.c}`}">${d?'✓':''}</div>
+        <span class="clbl">${item}</span>
+      </div>`}).join('')}</div>`).join('');
+}
+
+function renderRem(){
+  const nx=nextP(),subs={Fajr:'Pre-dawn',Dhuhr:'Midday',Asr:'Afternoon',Maghrib:'Sunset',Isha:'Night'};
+  const pRows=PNAMES.map(p=>`
+    <div class="pr">
+      <div><span class="prn">${p}</span><span class="prs">${subs[p]}</span></div>
+      <div class="prt${nx.name===p?' nx':''}">${f12(PT[p])}${nx.name===p?'<span class="nxb">NEXT</span>':''}</div>
+    </div>`).join('');
+  const rem=[
+    {t:'5:00 AM', l:'Wake up & start the day',       c:'#14b8a6'},
+    {t:'6:00 AM', l:'Cook breakfast + school lunches',c:'#34d399'},
+    {t:'8:05 AM', l:'Leave for school drop-off',      c:'#818cf8'},
+    {t:'10:00 AM',l:'Housework block',                c:'#34d399'},
+    {t:'3:00 PM', l:'School pick-up time',            c:'#818cf8'},
+    {t:'3:45 PM', l:'Children\'s homework time',      c:'#818cf8'},
+    {t:'6:00 PM', l:'Start cooking dinner',           c:'#34d399'},
+    {t:'8:30 PM', l:'Little one\'s bath time',        c:'#818cf8'},
+    {t:'9:00 PM', l:'Children\'s bedtime routine',    c:'#818cf8'},
+    {t:'11:00 PM',l:'Lights out — adults bedtime',    c:'#0d7a71'},
+  ];
+  document.getElementById('tab-reminders').innerHTML=`
+    <div class="rc"><div class="rct">🕌 Today's Salah Times</div>${pRows}</div>
+    <div class="rc"><div class="rct">⏰ Daily Task Reminders</div>
+      ${rem.map(r=>`<div class="rrow"><div class="rdot" style="background:${r.c}"></div><div class="rtm">${r.t}</div><div class="rlb">${r.l}</div></div>`).join('')}
+    </div>
+    <div class="tip">
+      <strong>🔔 Notification alerts include:</strong><br>
+      • 10-min warning before each prayer<br>
+      • Alert at exact prayer time with adhan reminder<br>
+      • School drop-off, pick-up, dinner, bath & bedtime<br><br>
+      <strong>📲 Install tip:</strong> Open in Chrome → tap ⋮ menu → <em>Add to Home screen</em> → works like a real app!
+    </div>`;
+}
+
+// ── INTERACTIONS ─────────────────────────────────────────────────────────
+function tS(i){ck['s'+i]=!ck['s'+i];renderSched()}
+function tC(k,el){
+  ck[k]=!ck[k];el.classList.toggle('on',ck[k]);
+  const b=el.querySelector('.ck'),c=el.dataset.c;
+  b.style.cssText=ck[k]?`background:${c};border-color:${c}`:`border-color:${c}`;
+  b.innerHTML=ck[k]?'✓':'';
+}
+function resetAll(){ck={};renderSched()}
+function sw(id,btn){
+  ['schedule','checklist','reminders'].forEach(t=>document.getElementById('tab-'+t).classList.toggle('hidden',t!==id));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ── PWA INSTALL ───────────────────────────────────────────────────────────
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  const bar=document.getElementById('installBar');
+  bar.classList.remove('hidden');
+  document.getElementById('installBtn').onclick=async()=>{
+    deferredPrompt.prompt();
+    const{outcome}=await deferredPrompt.userChoice;
+    if(outcome==='accepted')bar.classList.add('hidden');
+    deferredPrompt=null;
+  };
+});
+
+// ── SERVICE WORKER ────────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+function init(){
+  PT=calcTimes();
+  document.getElementById('dateStr').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  renderBanner();renderPGrid();renderSched();renderCL();renderRem();
+  updateNotifBar();
+  if(notifGranted) scheduleNotifications();
+}
+init();
+setInterval(()=>{renderBanner();renderPGrid()},30000);
+// Reset checklist at midnight
+const now=new Date(),midnight=new Date(now);
+midnight.setHours(24,0,0,0);
+setTimeout(()=>{ck={};init();},midnight-now);
+</script>
+</body>
+</html>
