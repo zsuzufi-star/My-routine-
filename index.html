@@ -241,11 +241,12 @@ function buildSched(){return[
   {t:'7:45–8:00 AM',   l:'Elder daughter shower',                           tp:'child'},
   {t:'7:50–8:00 AM',   l:'Little one clean & wash-up',                      tp:'child'},
   {t:'8:00–8:15 AM',   l:'Prepare breakfast',                               tp:'house'},
-  {t:'8:15–9:00 AM',   l:'Family feeding & breakfast together',             tp:'task'},
-  {t:'9:00–10:30 AM',  l:'Clear kitchen, tidy, prepare for school',         tp:'house'},
-  {t:'10:30 AM',       l:'Drop-off children to school',                     tp:'child'},
-  {t:'10:30–11:00 AM', l:'Return home — tea & rest',                        tp:'task'},
-  {t:'11:00–12:00 PM', l:'Household chores & laundry',                      tp:'house'},
+  {t:'8:15–8:30 AM',   l:'Family feeding & breakfast together',             tp:'task'},
+  {t:'8:30–9:15 AM',   l:'Drop-off children to school (by 8:30)',          tp:'child'},
+  {t:'9:15–10:00 AM',  l:'Return home — tea & rest',                        tp:'task'},
+  {t:'10:00–10:30 AM', l:'Household chores & laundry',                      tp:'house'},
+  {t:'10:30–11:00 AM', l:'Family breakfast together',                       tp:'task'},
+  {t:'11:00 AM–12:00 PM', l:'Continue housework & laundry',                 tp:'house'},
   {t:'12:00–12:30 PM', l:'Lunch',                                           tp:'task'},
   {t:f12(PT.Dhuhr),    l:'★ Dhuhr Prayer',                                  tp:'prayer'},
   {t:'After Dhuhr',    l:'Little one naps — your rest / reading time',      tp:'task'},
@@ -308,7 +309,9 @@ function scheduleNotifications(){
     {time24:'07:50',title:'🚿 Little One Clean', body:'Time to clean and wash the little one.'},
     {time24:'08:00',title:'🍳 Prepare Breakfast',body:'Time to prepare breakfast.'},
     {time24:'08:15',title:'🥣 Family Breakfast', body:'Time for family feeding and breakfast.'},
-    {time24:'10:30',title:'🎒 School Drop-off',  body:'Time to drop off children to school.'},
+    {time24:'08:30',title:'🎒 School Drop-off',  body:'Time to drop off children to school by 8:30!'},
+    {time24:'09:15',title:'🏡 Return Home',      body:'Time to return home and have tea.'},
+    {time24:'10:30',title:'🥞 Family Breakfast', body:'Time for family breakfast together.'},
     {time24:'15:00',title:'🏫 School Pick-up',   body:'Time to pick up the children from school.'},
     {time24:'18:00',title:'🍽 Start Dinner',     body:'Time to start cooking dinner.'},
     {time24:'20:30',title:'🛁 Bath Time',        body:"Time for the little one's bath and wash-up."},
@@ -388,10 +391,10 @@ function renderCL(){
   const cats=[
     {ti:'🌅 Morning',c:'#14b8a6',it:['Wake up at 5:00 AM','Fajr prayer + Qur\'an','Personal prep & kitchen tidy','Elder daughter shower 7:45 AM','Little one clean at 7:50 AM','Prepare breakfast by 8:00 AM','Family breakfast 8:15 AM']},
     {ti:'🕌 5 Daily Prayers',c:'#f59e0b',it:PNAMES.map(p=>`${p} — ${f12(PT[p])}`)},
-    {ti:'🧹 Housework',c:'#34d399',it:['Clear kitchen after breakfast','Tidy & prepare for school','Household chores & laundry','Cook lunch & dinner prep']},
-    {ti:'🎒 School',c:'#818cf8',it:['School drop-off at 10:30 AM','School pick-up at 3:00 PM','Help with homework & studying','Reading time with children']},
+    {ti:'🧹 Housework',c:'#34d399',it:['Clear kitchen after breakfast','Household chores & laundry','Cook lunch & dinner prep']},
+    {ti:'🎒 School',c:'#818cf8',it:['School drop-off at 8:30 AM','Return home by 9:15 AM','School pick-up at 3:00 PM','Help with homework & studying']},
     {ti:'👧 Daughters',c:'#818cf8',it:['Elder daughter shower 7:45 AM','Little one clean 7:50 AM','Bath & wash-up at 8:30 PM','Bedtime routine & story at 9:00 PM']},
-    {ti:'🫶 Self & Family',c:'#f472b6',it:['Tea breaks (enjoy!)','TV / family time','Personal reading','Rest time after school','Prep for tomorrow','Wind down before bed']},
+    {ti:'🫶 Self & Family',c:'#f472b6',it:['Tea breaks (enjoy!)','Family breakfast at 10:30 AM','TV / family time','Personal reading','Rest time after school','Prep for tomorrow','Wind down before bed']},
   ];
   document.getElementById('tab-checklist').innerHTML=cats.map((cat,ci)=>`
     <div class="ct" style="color:${cat.c}">${cat.ti}</div>
@@ -415,7 +418,9 @@ function renderRem(){
     {t:'7:50 AM', l:'Little one clean & wash-up',    c:'#818cf8'},
     {t:'8:00 AM', l:'Prepare breakfast',              c:'#34d399'},
     {t:'8:15 AM', l:'Family breakfast & feeding',    c:'#14b8a6'},
-    {t:'10:30 AM',l:'School drop-off time',          c:'#818cf8'},
+    {t:'8:30 AM', l:'School drop-off time',          c:'#818cf8'},
+    {t:'9:15 AM', l:'Return home & tea',             c:'#14b8a6'},
+    {t:'10:30 AM',l:'Family breakfast together',     c:'#14b8a6'},
     {t:'3:00 PM', l:'School pick-up time',           c:'#818cf8'},
     {t:'6:00 PM', l:'Start cooking dinner',          c:'#34d399'},
     {t:'8:30 PM', l:'Little one\'s bath time',       c:'#818cf8'},
@@ -430,7 +435,7 @@ function renderRem(){
       <strong>🔔 Notification alerts include:</strong><br>
       • 10-min warning before each prayer (with sound)<br>
       • Alert at exact prayer time with sound reminder<br>
-      • All key tasks: school times, meal prep, bedtimes<br><br>
+      • All key tasks: school times, meals, bedtimes<br><br>
       <strong>📲 Install tip:</strong> Open in Chrome → tap ⋮ menu → <em>Add to Home screen</em> → works like a real app!
     </div>`;
 }
